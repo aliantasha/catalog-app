@@ -42,67 +42,27 @@ if uploaded_file is not None and buyer != "PLEASE SELECT" and cat_type != "PLEAS
 
     try:
         # Read uploaded tracking data sheet
-        wb_upload = openpyxl.load_workbook(uploaded_file, data_only=True)
-        sheet = wb_upload.active
-        
-        staged_rows = []
+       staged_rows = []
         curr_row = 14
         while True:
             desc_val = sheet.cell(row=curr_row, column=3).value
             if desc_val is None or str(desc_val).strip() == "":
                 break
+            
+            # 🛡️ SAFE PRICE CHECK: If it sees text like 'GEN', it will default to 0.0 instead of crashing!
+            raw_price = sheet.cell(row=curr_row, column=6).value
+            try:
+                clean_price = float(raw_price) if raw_price is not None else 0.0
+            except ValueError:
+                clean_price = 0.0  # Safe fallback if it's a string like 'GEN'
+                
             staged_rows.append({
                 "Partner Name": str(sheet.cell(row=curr_row, column=1).value or "").upper(),
                 "Category": str(sheet.cell(row=curr_row, column=2).value or "Goods/Item"),
                 "Item Description (46 Chars)": str(desc_val).upper()[:46],
-                "Price": float(sheet.cell(row=curr_row, column=6).value or 0.0),
+                "Price": clean_price,
                 "Currency": str(sheet.cell(row=curr_row, column=7).value or "MYR").upper(),
                 "UMSR": str(sheet.cell(row=curr_row, column=4).value or "PCE").upper(),
                 "Validity": str(sheet.cell(row=curr_row, column=5).value or "").split('.')[0]
             })
             curr_row += 1
-            
-        if not staged_rows:
-            staged_rows = [{"Partner Name": "EXAMPLE SUPPLIER", "Category": "Goods/Item", "Item Description (46 Chars)": "SAMPLE TEST ENTRY", "Price": 10.00, "Currency": "MYR", "UMSR": "PCE", "Validity": ""}]
-            
-        df_staged = pd.DataFrame(staged_rows)
-        
-        # Display the live table
-        edited_df = st.data_editor(df_staged, num_rows="dynamic", use_container_width=True)
-        
-        # --- 5. SYNC ENGINE ---
-        if st.button("🚀 Confirm & Sync All Rows", type="primary", use_container_width=True):
-            with st.spinner("Processing sequences..."):
-                time.sleep(1)
-                
-                # Suffix and prefixes matching your rules
-                suffix_char = "R" if buyer == "Luqman" else ("P" if buyer == "Alisya" else "D")
-                prefix_letter = "C" if cat_type == "Controllable" else ("CC" if cat_type == "Comparison" else ("X" if cat_type == "Chemical" else "N"))
-                full_prefix = f"{prefix_letter}{suffix_char}"
-                
-                # Assign sequence IDs dynamically
-                assigned_codes = [f"{full_prefix}{5500 + i}" for i in range(len(edited_df))]
-                edited_df.insert(0, "Assigned Catalog Code", assigned_codes)
-                
-                st.success("🎉 Process Complete!")
-                
-                # --- 6. RECEIPT GENERATOR ---
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M")
-                receipt_filename = f"Receipt_{buyer}_{cat_type}_{timestamp}.xlsx"
-                
-                output = io.BytesIO()
-                with pd.ExcelWriter(output, engine='openpyxl') as writer:
-                    edited_df.to_excel(writer, index=False)
-                excel_bytes = output.getvalue()
-                
-                st.download_button(
-                    label=f"📥 Click to Download {receipt_filename}",
-                    data=excel_bytes,
-                    file_name=receipt_filename,
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    use_container_width=True
-                )
-    except Exception as err:
-        st.error(f"Error: {err}")
-else:
-    st.warning("👈 Select your profile options and upload a file in the sidebar to begin!")
