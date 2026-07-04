@@ -19,7 +19,6 @@ st.markdown("""
 st.markdown('<div class="main-title">📊 Dynamic Catalog Overrides Hub (No-Cloud Mode)</div>', unsafe_allow_html=True)
 
 # --- 2. PASTE YOUR GOOGLE SHEET LINKS HERE ---
-# Streamlit reads these public edit links directly without any cloud accounts!
 CATALOG_MASTER_LINK = "https://docs.google.com/spreadsheets/d/YOUR_CATALOG_SHEET_ID_HERE/edit?usp=sharing"
 BUYER_FILE_LINK = "https://docs.google.com/spreadsheets/d/YOUR_BUYER_SHEET_ID_HERE/edit?usp=sharing"
 
@@ -41,9 +40,13 @@ if uploaded_file is not None and buyer != "PLEASE SELECT" and cat_type != "PLEAS
     st.info("💡 Make corrections directly in the table cells below.")
 
     try:
-        # Read uploaded tracking data sheet
-       staged_rows = []
+        # Load the uploaded file using openpyxl and get the active sheet
+        wb = openpyxl.load_workbook(uploaded_file, data_only=True)
+        sheet = wb.active
+
+        staged_rows = []
         curr_row = 14
+        
         while True:
             desc_val = sheet.cell(row=curr_row, column=3).value
             if desc_val is None or str(desc_val).strip() == "":
@@ -53,8 +56,8 @@ if uploaded_file is not None and buyer != "PLEASE SELECT" and cat_type != "PLEAS
             raw_price = sheet.cell(row=curr_row, column=6).value
             try:
                 clean_price = float(raw_price) if raw_price is not None else 0.0
-            except ValueError:
-                clean_price = 0.0  # Safe fallback if it's a string like 'GEN'
+            except (ValueError, TypeError):
+                clean_price = 0.0  # Safe fallback if it's a string like 'GEN' or None
                 
             staged_rows.append({
                 "Partner Name": str(sheet.cell(row=curr_row, column=1).value or "").upper(),
@@ -66,3 +69,13 @@ if uploaded_file is not None and buyer != "PLEASE SELECT" and cat_type != "PLEAS
                 "Validity": str(sheet.cell(row=curr_row, column=5).value or "").split('.')[0]
             })
             curr_row += 1
+
+        # Display the data in an editable dataframe matrix
+        if staged_rows:
+            df = pd.DataFrame(staged_rows)
+            edited_df = st.data_editor(df, num_rows="dynamic", use_container_width=True)
+        else:
+            st.warning("⚠️ No data rows found starting from row 14.")
+
+    except Exception as e:
+        st.error(f"❌ Error processing spreadsheet: {e}")
