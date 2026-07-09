@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog Code Request Portal</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f6; padding: 40px; color: #333; margin: 0; }
+        .form-container { max-width: 600px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin: 40px auto; }
+        h2 { text-align: center; color: #0056b3; margin-bottom: 25px; font-size: 24px; }
+        label { font-weight: bold; display: block; margin-top: 15px; margin-bottom: 5px; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        textarea { resize: vertical; }
+        button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        button:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>📋 Catalog Code Request Form</h2>
+    <form id="requestForm">
+        
+        <label for="partnerSearch">Partner Name:</label>
+        <input type="text" id="partnerSearch" list="partnerList" placeholder="Type to search partner..." required>
+        <datalist id="partnerList">
+            <!-- Your Python automation script will dynamically paste your thousands of Excel rows here later! -->
+            <option value="PEOPLELOGY DEVELOPMENT SDN BHD-EXP1">
+            <option value="PEOPLELOGY GOAL SDN BHD">
+            <option value="PERCETAKAN RONSON SDN BHD-EXP1">
+            <option value="PIZZA HUT RESTAURANTS SDN BHD-EXP1">
+        </datalist>
+
+        <label for="categoryType">Category Type:</label>
+        <select id="categoryType" required>
+            <option value="">-- Select Category --</option>
+            <option value="Controllable">Controllable</option>
+            <option value="Comparison">Comparison</option>
+            <option value="Chemical">Chemical</option>
+            <option value="Non-Controllable">Non-Controllable</option>
+        </select>
+
+        <label for="description">Item Description:</label>
+        <textarea id="description" rows="3" placeholder="Provide full details..." required></textarea>
+
+        <label for="price">Price:</label>
+        <input type="number" id="price" step="0.01" placeholder="0.00" required>
+
+        <label for="currency">Currency:</label>
+        <input type="text" id="currency" value="MYR" required>
+
+        <label for="userEmail">Your Email Address:</label>
+        <input type="email" id="userEmail" placeholder="yourname@company.com" required>
+
+        <button type="submit">Submit Request</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('requestForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Form Submitted successfully! Next, we will connect this submit button to your automated cloud database.');
+    });
+</script>
+
+</body>
+</html>
