@@ -5,61 +5,163 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catalog Code Request Portal</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f6; padding: 40px; color: #333; margin: 0; }
-        .form-container { max-width: 600px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin: 40px auto; }
-        h2 { text-align: center; color: #0056b3; margin-bottom: 25px; font-size: 24px; }
-        label { font-weight: bold; display: block; margin-top: 15px; margin-bottom: 5px; font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
-        textarea { resize: vertical; }
-        button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        button:hover { background-color: #218838; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f6; padding: 20px; color: #333; margin: 0; }
+        .form-container { max-width: 700px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin: 20px auto; }
+        h2 { text-align: center; color: #0056b3; margin-bottom: 25px; font-size: 24px; border-bottom: 2px solid #f4f7f6; padding-bottom: 15px; }
+        .row { display: flex; gap: 15px; }
+        .col { flex: 1; }
+        label { font-weight: bold; display: block; margin-top: 15px; margin-bottom: 5px; font-size: 13px; color: #555; }
+        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; background-color: #fff; }
+        input[readonly] { background-color: #e9ecef; color: #495057; cursor: not-allowed; border: 1px solid #ced4da; }
+        .char-count { font-size: 11px; color: #666; text-align: right; margin-top: -10px; margin-bottom: 10px; }
+        button { width: 100%; padding: 14px; background-color: #0056b3; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 15px; transition: background 0.2s; }
+        button:hover { background-color: #004085; }
     </style>
 </head>
 <body>
 
 <div class="form-container">
-    <h2>📋 Catalog Code Request Form</h2>
+    <h2>📋 New Catalog Item Request Portal</h2>
     <form id="requestForm">
         
+        <!-- 1. Partner Name Input Box -->
         <label for="partnerSearch">Partner Name:</label>
-        <input type="text" id="partnerSearch" list="partnerList" placeholder="Type to search partner..." required>
+        <input type="text" id="partnerSearch" list="partnerList" placeholder="Type or click to select a partner..." required autocomplete="off">
         <datalist id="partnerList">
-            <!-- Your Python automation script will dynamically paste your thousands of Excel rows here later! -->
+            <!-- Test Partner Data. Your Python script will insert thousands more here! -->
             <option value="PEOPLELOGY DEVELOPMENT SDN BHD-EXP1">
             <option value="PEOPLELOGY GOAL SDN BHD">
             <option value="PERCETAKAN RONSON SDN BHD-EXP1">
             <option value="PIZZA HUT RESTAURANTS SDN BHD-EXP1">
         </datalist>
 
-        <label for="categoryType">Category Type:</label>
-        <select id="categoryType" required>
-            <option value="">-- Select Category --</option>
-            <option value="Controllable">Controllable</option>
-            <option value="Comparison">Comparison</option>
-            <option value="Chemical">Chemical</option>
-            <option value="Non-Controllable">Non-Controllable</option>
-        </select>
+        <!-- Auto-Fetched Fields Row -->
+        <div class="row">
+            <div class="col">
+                <label for="partnerCode">Partner Code (Auto):</label>
+                <input type="text" id="partnerCode" readonly placeholder="Auto-fills">
+            </div>
+            <div class="col">
+                <label for="buyerCode">Buyer Code (Auto):</label>
+                <input type="text" id="buyerCode" readonly placeholder="Auto-fills">
+            </div>
+            <div class="col">
+                <label for="currency">Currency (Auto):</label>
+                <input type="text" id="currency" readonly placeholder="Auto-fills">
+            </div>
+        </div>
 
-        <label for="description">Item Description:</label>
-        <textarea id="description" rows="3" placeholder="Provide full details..." required></textarea>
+        <!-- 2. Item Description (46 Max Length & Capital Lock) -->
+        <label for="description">Item Description (Max 46 Characters, UPPERCASE Only):</label>
+        <input type="text" id="description" maxlength="46" placeholder="ENTER ITEM DESCRIPTION HERE" required>
+        <div class="char-count"><span id="charNum">0</span> / 46 characters</div>
 
-        <label for="price">Price:</label>
-        <input type="number" id="price" step="0.01" placeholder="0.00" required>
+        <!-- UOM and Validity Dates -->
+        <div class="row">
+            <div class="col">
+                <label for="uom">Purchase UOM:</label>
+                <select id="uom" required>
+                    <option value="">-- PLEASE SELECT --</option>
+                    <option value="BT">BT</option><option value="BUL">BUL</option><option value="BX">BX</option>
+                    <option value="CT">CT</option><option value="DAY">DAY</option><option value="DRM">DRM</option>
+                    <option value="GRM">GRM</option><option value="HR">HR</option><option value="JOB">JOB</option>
+                    <option value="KGM">KGM</option><option value="LOT">LOT</option><option value="LTR">LTR</option>
+                    <option value="M3">M3</option><option value="MAN">MAN</option><option value="MLT">MLT</option>
+                    <option value="MM">MM</option><option value="MTH">MTH</option><option value="NRL">NRL</option>
+                    <option value="PCE">PCE</option><option value="PKT">PKT</option><option value="PR">PR</option>
+                    <option value="PT">PT</option><option value="SET">SET</option><option value="SHT">SHT</option>
+                    <option value="TON">TON</option><option value="TRP">TRP</option><option value="UT">UT</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="validityDate">End of Validity Date:</label>
+                <input type="date" id="validityDate" required>
+            </div>
+        </div>
 
-        <label for="currency">Currency:</label>
-        <input type="text" id="currency" value="MYR" required>
+        <!-- Prices Rows -->
+        <div class="row">
+            <div class="col">
+                <label for="initialPrice">Initial Price:</label>
+                <input type="number" id="initialPrice" step="0.01" placeholder="0.00" required>
+            </div>
+            <div class="col">
+                <label for="finalPrice">Final Price:</label>
+                <input type="number" id="finalPrice" step="0.01" placeholder="0.00" required>
+            </div>
+        </div>
 
-        <label for="userEmail">Your Email Address:</label>
-        <input type="email" id="userEmail" placeholder="yourname@company.com" required>
+        <!-- Logistics Rows -->
+        <div class="row">
+            <div class="col">
+                <label for="moq">MOQ (Min Order Qty):</label>
+                <input type="number" id="moq" value="1" min="1" required>
+            </div>
+            <div class="col">
+                <label for="leadTime">Lead Time (Days):</label>
+                <input type="number" id="leadTime" placeholder="e.g. 7" min="0" required>
+            </div>
+            <div class="col">
+                <label for="shippingTerm">Shipping Term:</label>
+                <select id="shippingTerm" required>
+                    <option value="">-- PLEASE SELECT --</option>
+                    <option value="CIF">CIF</option><option value="CIP">CIP</option><option value="DAP">DAP</option>
+                    <option value="DAT">DAT</option><option value="DDP">DDP</option><option value="DDU">DDU</option>
+                    <option value="EXW">EXW</option><option value="FCA">FCA</option><option value="FOB">FOB</option>
+                    <option value="OTHERS">OTHERS</option>
+                </select>
+            </div>
+        </div>
 
         <button type="submit">Submit Request</button>
     </form>
 </div>
 
 <script>
+    // Mock Data Store: Python will auto-generate this database matrix list later!
+    const partnerDatabase = {
+        "PEOPLELOGY DEVELOPMENT SDN BHD-EXP1": { partnerCode: "PPL-001", buyerCode: "BYR-A", currency: "MYR" },
+        "PEOPLELOGY GOAL SDN BHD": { partnerCode: "PPL-002", buyerCode: "BYR-B", currency: "MYR" },
+        "PERCETAKAN RONSON SDN BHD-EXP1": { partnerCode: "PRN-055", buyerCode: "BYR-A", currency: "SGD" },
+        "PIZZA HUT RESTAURANTS SDN BHD-EXP1": { partnerCode: "PZH-999", buyerCode: "BYR-C", currency: "USD" }
+    };
+
+    const partnerSearch = document.getElementById('partnerSearch');
+    const descInput = document.getElementById('description');
+
+    // Rule: Auto-fetch details when partner name is chosen
+    partnerSearch.addEventListener('input', function() {
+        const selected = this.value;
+        if (partnerDatabase[selected]) {
+            document.getElementById('partnerCode').value = partnerDatabase[selected].partnerCode;
+            document.getElementById('buyerCode').value = partnerDatabase[selected].buyerCode;
+            document.getElementById('currency').value = partnerDatabase[selected].currency;
+        } else {
+            document.getElementById('partnerCode').value = "";
+            document.getElementById('buyerCode').value = "";
+            document.getElementById('currency').value = "";
+        }
+    });
+
+    // Rule: Capital letters lock and character counting tracker
+    descInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+        document.getElementById('charNum').innerText = this.value.length;
+    });
+
+    // Rule: Decimal formatting rule adjustment (ex: 19 becomes 19.00)
+    function formatDecimal() {
+        if(this.value) {
+            this.value = parseFloat(this.value).toFixed(2);
+        }
+    }
+    document.getElementById('initialPrice').addEventListener('blur', formatDecimal);
+    document.getElementById('finalPrice').addEventListener('blur', formatDecimal);
+
+    // Form Submission Action Mockup
     document.getElementById('requestForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        alert('Form Submitted successfully! Next, we will connect this submit button to your automated cloud database.');
+        alert('All rules passed! Ready to sync to your files.');
     });
 </script>
 
