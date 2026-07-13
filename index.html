@@ -3,309 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Multi-Row Catalog Hub</title>
+    <title>Catalog Code Request Portal</title>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f6; padding: 20px; color: #333; margin: 0; }
-        .app-container { max-width: 1400px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin: 20px auto; }
-        h2 { color: #2c3e50; border-bottom: 2px solid #f4f7f6; padding-bottom: 15px; margin-top: 0; font-size: 22px; }
-        h3 { color: #2c3e50; font-size: 15px; margin-top: 20px; margin-bottom: 10px; font-weight: 600; }
-        .row-flex { display: flex; gap: 20px; margin-bottom: 20px; }
-        .col-flex { flex: 1; }
-        label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 12px; color: #555; }
-        select, input[type="file"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; background-color: #fff; box-sizing: border-box; }
-        hr { border: 0; border-top: 1px solid #ccc; margin: 25px 0; }
-        
-        /* Exact Interactive Data Grid Mirroring Colab Columns */
-        .table-container { width: 100%; overflow-x: auto; margin-top: 15px; border: 1px solid #ddd; border-radius: 4px; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 1200px; }
-        th { background-color: #2c3e50; color: white; padding: 12px 10px; border-bottom: 2px solid #ddd; font-weight: 600; font-size: 12px; text-transform: uppercase; }
-        td { padding: 6px; border-bottom: 1px solid #eee; }
-        td input { width: 100%; padding: 8px 6px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 13px; }
-        td input[readonly] { background-color: #e9ecef; color: #495057; cursor: not-allowed; border: 1px solid #ced4da; }
-        
-        .placeholder-text { color: #7f8c8d; font-style: italic; text-align: center; padding: 30px; font-size: 14px; }
-        .btn-submit { width: 100%; padding: 14px; background-color: #0056b3; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 25px; transition: background 0.2s; }
-        .btn-submit:hover { background-color: #004085; }
-        .btn-submit:disabled { background-color: #cccccc; cursor: not-allowed; }
-        .status-msg { margin-top: 15px; padding: 12px; border-radius: 4px; display: none; font-weight: bold; font-size: 14px; text-align: center; }
+        .form-container { max-width: 750px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin: 20px auto; }
+        h2 { text-align: center; color: #0056b3; margin-bottom: 25px; font-size: 24px; border-bottom: 2px solid #f4f7f6; padding-bottom: 15px; margin-top: 0; }
+        h3 { font-size: 14px; color: #0056b3; border-bottom: 1px solid #ddd; padding-bottom: 5px; margin-top: 25px; margin-bottom: 15px; }
+        .row { display: flex; gap: 15px; margin-bottom: 5px; }
+        .col { flex: 1; }
+        label { font-weight: bold; display: block; margin-top: 12px; margin-bottom: 5px; font-size: 13px; color: #555; }
+        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; background-color: #fff; }
+        input[readonly] { background-color: #e9ecef; color: #495057; cursor: not-allowed; border: 1px solid #ced4da; }
+        .char-count { font-size: 11px; color: #666; text-align: right; margin-top: -10px; margin-bottom: 10px; }
+        button { width: 100%; padding: 14px; background-color: #0056b3; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 20px; transition: background 0.2s; }
+        button:hover { background-color: #004085; }
+        .status-msg { margin-top: 15px; padding: 12px; border-radius: 4px; display: none; font-weight: bold; text-align: center; font-size: 14px; }
     </style>
-    <!-- SheetJS Library to handle Excel files natively in the webpage -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
-<div class="app-container">
-    <h2>⚙️ INTERACTIVE DYNAMIC MULTI-ROW CATALOG HUB</h2>
-    <p style="color:#666; font-size: 13px; margin-top: -10px;">Production Web Version — Shared Corporate Manual Correction Mode</p>
-    
-    <!-- Section 1 & 2 Layout Controls (Matches Colab exact input states) -->
-    <div class="row-flex">
-        <div class="col-flex">
-            <h3>📂 1. UPLOAD USER REQUEST FILE</h3>
-            <input type="file" id="fileUploader" accept=".xlsx, .xls, .xlsm">
-        </div>
-        <div class="col-flex">
-            <h3>👤 2. ASSIGN CORE BUYER PROFILE & CLASS</h3>
-            <div class="row-flex" style="margin-bottom: 0; gap: 10px;">
-                <div class="col-flex">
-                    <label for="operatorDropdown">Assign Buyer:</label>
-                    <select id="operatorDropdown">
-                        <option value="PLEASE SELECT">PLEASE SELECT</option>
-                        <option value="Luqman">Luqman</option>
-                        <option value="Alisya">Alisya</option>
-                        <option value="Tan">Tan</option>
-                    </select>
-                </div>
-                <div class="col-flex">
-                    <label for="categoryDropdown">Category Type:</label>
-                    <select id="categoryDropdown">
-                        <option value="PLEASE SELECT">PLEASE SELECT</option>
-                        <option value="Controllable">Controllable</option>
-                        <option value="Comparison">Comparison</option>
-                        <option value="Chemical">Chemical</option>
-                        <option value="Non-Controllable">Non-Controllable</option>
-                    </select>
-                </div>
+<div class="form-container">
+    <h2>📋 New Catalog Item Request Portal</h2>
+    <form id="requestForm">
+        
+        <!-- 1. PDF Quotation Upload -->
+        <label for="pdfUpload"><strong>📂 Upload Quotation (PDF Only):</strong></label>
+        <input type="file" id="pdfUpload" accept=".pdf" required>
+
+        <h3>🏢 Partner Profile & Auto-Generated Codes</h3>
+
+        <!-- Partner Search Input Box -->
+        <label for="partnerSearch">Partner Name:</label>
+        <input type="text" id="partnerSearch" list="partnerList" placeholder="Type or click to select a partner..." required autocomplete="off">
+        <datalist id="partnerList">
+            <!-- Dropdown Options will populate dynamically below -->
+            <option value="PEOPLELOGY DEVELOPMENT SDN BHD-EXP1">
+            <option value="PEOPLELOGY GOAL SDN BHD">
+            <option value="PERCETAKAN RONSON SDN BHD-EXP1">
+            <option value="PIZZA HUT RESTAURANTS SDN BHD-EXP1">
+        </datalist>
+
+        <!-- Auto-Fetched Fields Row -->
+        <div class="row">
+            <div class="col">
+                <label for="partnerCode">Partner Code (Auto):</label>
+                <input type="text" id="partnerCode" readonly placeholder="Auto-fills from matrix">
+            </div>
+            <div class="col">
+                <label for="buyerCode">Buyer Code (Auto):</label>
+                <input type="text" id="buyerCode" readonly placeholder="Auto-fills from matrix">
+            </div>
+            <div class="col">
+                <label for="currency">Currency (Auto):</label>
+                <input type="text" id="currency" readonly placeholder="Auto-fills from matrix">
             </div>
         </div>
-    </div>
 
-    <hr style="border: 0; border-top: 1px solid #ccc;">
+        <h3>📝 Catalog Item Details</h3>
 
-    <!-- Section 3: The Exact Matrix Output -->
-    <h3>📝 CORRECT EXTRACTED DATA IN-LINE BELOW:</h3>
-    <div id="gridContainer" class="table-container">
-        <p class="placeholder-text">Please upload a request file above to generate the manual correction rows matrix...</p>
-    </div>
+        <!-- Category Dropdown Selection -->
+        <label for="category">Category Type:</label>
+        <select id="category" required>
+            <option value="">-- PLEASE SELECT --</option>
+            <option value="Controllable">Controllable</option>
+            <option value="Comparison">Comparison</option>
+            <option value="Chemical">Chemical</option>
+            <option value="Non-Controllable">Non-Controllable</option>
+        </select>
 
-    <div id="statusNotification" class="status-msg"></div>
-    <button id="submitBtn" class="btn-submit" disabled>Confirm & Sync All Rows to Drive</button>
+        <!-- Item Description (46 Max Length & Capital Lock) -->
+        <label for="description">Item Description (Max 46 Characters, UPPERCASE Only):</label>
+        <input type="text" id="description" maxlength="46" placeholder="ENTER ITEM DESCRIPTION HERE" required>
+        <div class="char-count"><span id="charNum">0</span> / 46 characters</div>
+
+        <!-- UOM and Validity Dates -->
+        <div class="row">
+            <div class="col">
+                <label for="uom">Purchase UOM:</label>
+                <select id="uom" required>
+                    <option value="">-- PLEASE SELECT --</option>
+                    <option value="BT">BT</option><option value="BUL">BUL</option><option value="BX">BX</option>
+                    <option value="CT">CT</option><option value="DAY">DAY</option><option value="DRM">DRM</option>
+                    <option value="GRM">GRM</option><option value="HR">HR</option><option value="JOB">JOB</option>
+                    <option value="KGM">KGM</option><option value="LOT">LOT</option><option value="LTR">LTR</option>
+                    <option value="M3">M3</option><option value="MAN">MAN</option><option value="MLT">MLT</option>
+                    <option value="MM">MM</option><option value="MTH">MTH</option><option value="NRL">NRL</option>
+                    <option value="PCE">PCE</option><option value="PKT">PKT</option><option value="PR">PR</option>
+                    <option value="PT">PT</option><option value="SET">SET</option><option value="SHT">SHT</option>
+                    <option value="TON">TON</option><option value="TRP">TRP</option><option value="UT">UT</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="validityDate">End of Validity Date:</label>
+                <input type="date" id="validityDate" required>
+            </div>
+        </div>
+
+        <!-- Prices Rows -->
+        <div class="row">
+            <div class="col">
+                <label for="initialPrice">Initial Price:</label>
+                <input type="number" id="initialPrice" step="0.01" placeholder="0.00" required>
+            </div>
+            <div class="col">
+                <label for="finalPrice">Final Price:</label>
+                <input type="number" id="finalPrice" step="0.01" placeholder="0.00" required>
+            </div>
+        </div>
+
+        <!-- Logistics Rows -->
+        <div class="row">
+            <div class="col">
+                <label for="moq">MOQ (Min Order Qty):</label>
+                <input type="number" id="moq" value="1" min="1" required>
+            </div>
+            <div class="col">
+                <label for="leadTime">Lead Time (Days):</label>
+                <input type="number" id="leadTime" placeholder="e.g. 7" min="0" required>
+            </div>
+            <div class="col">
+                <label for="shippingTerm">Shipping Term:</label>
+                <select id="shippingTerm" required>
+                    <option value="">-- PLEASE SELECT --</option>
+                    <option value="CIF">CIF</option><option value="CIP">CIP</option><option value="DAP">DAP</option>
+                    <option value="DAT">DAT</option><option value="DDP">DDP</option><option value="DDU">DDU</option>
+                    <option value="EXW">EXW</option><option value="FCA">FCA</option><option value="FOB">FOB</option>
+                    <option value="OTHERS">OTHERS</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="statusNotification" class="status-msg"></div>
+        <button type="submit" id="submitBtn">Submit Request</button>
+    </form>
 </div>
 
 <script>
-    // Paste your Google Apps Script Web App Deployment URL here to connect the data stream
+    // Config: Paste your Google Apps Script Web App URL here
     const GOOGLE_WEBAPP_URL = "PASTE_YOUR_GOOGLE_WEB_APP_URL_HERE";
 
-    let extractedRowsData = [];
-    const fileUploader = document.getElementById('fileUploader');
-    const operatorDropdown = document.getElementById('operatorDropdown');
-    const categoryDropdown = document.getElementById('categoryDropdown');
-    const gridContainer = document.getElementById('gridContainer');
+    // Matrix Database Lookup: You can paste your thousands of entries directly here!
+    const partnerDatabase = {
+        "PEOPLELOGY DEVELOPMENT SDN BHD-EXP1": { partnerCode: "PPL-001", buyerCode: "BYR-A", currency: "MYR" },
+        "PEOPLELOGY GOAL SDN BHD": { partnerCode: "PPL-002", buyerCode: "BYR-B", currency: "MYR" },
+        "PERCETAKAN RONSON SDN BHD-EXP1": { partnerCode: "PRN-055", buyerCode: "BYR-A", currency: "SGD" },
+        "PIZZA HUT RESTAURANTS SDN BHD-EXP1": { partnerCode: "PZH-999", buyerCode: "BYR-C", currency: "USD" }
+    };
+
+    const partnerSearch = document.getElementById('partnerSearch');
+    const descInput = document.getElementById('description');
     const submitBtn = document.getElementById('submitBtn');
     const statusNotification = document.getElementById('statusNotification');
 
-    // Run processing as soon as a file is chosen
-    fileUploader.addEventListener('change', checkAndProcessFile);
-
-    function checkAndProcessFile() {
-        const file = fileUploader.files[0];
-        if (file) {
-            showStatus("Reading spreadsheet rows exactly like Python matrix engine...", "#3498db", true);
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array', cellDates: true });
-                    
-                    // Exclude master lookup tab, target the active transactional data sheet
-                    const targetSheetName = workbook.SheetNames.find(name => name !== "PivVendorMaster") || workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[targetSheetName];
-                    
-                    // Convert rows to matrix arrays
-                    const jsonRows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                    processExtractedMatrix(jsonRows);
-                } catch (err) {
-                    showStatus("Error reading Excel file: " + err.message, "#e74c3c");
-                }
-            };
-            reader.readAsArrayBuffer(file);
+    // Rule: Auto-fetch details when partner name matches database key matrix
+    partnerSearch.addEventListener('input', function() {
+        const selected = this.value;
+        if (partnerDatabase[selected]) {
+            document.getElementById('partnerCode').value = partnerDatabase[selected].partnerCode;
+            document.getElementById('buyerCode').value = partnerDatabase[selected].buyerCode;
+            document.getElementById('currency').value = partnerDatabase[selected].currency;
         } else {
-            resetGridPlaceholder();
+            // Keep empty if typing a name not yet saved in database matrix
+            document.getElementById('partnerCode').value = "";
+            document.getElementById('buyerCode').value = "";
+            document.getElementById('currency').value = "";
+        }
+    });
+
+    // Rule: Capital letters lock and character counting tracker
+    descInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+        document.getElementById('charNum').innerText = this.value.length;
+    });
+
+    // Rule: Auto Decimal formatting on loss of focus (ex: 19 becomes 19.00)
+    function formatDecimal() {
+        if(this.value) {
+            this.value = parseFloat(this.value).toFixed(2);
         }
     }
+    document.getElementById('initialPrice').addEventListener('blur', formatDecimal);
+    document.getElementById('finalPrice').addEventListener('blur', formatDecimal);
 
-    function processExtractedMatrix(matrixData) {
-        if (matrixData.length < 14) {
-            showStatus("Row scan failed: File row count starts at index 14.", "#e74c3c");
+    // Form Submission: Reads PDF file data and posts package to Google Drive
+    document.getElementById('requestForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const fileInput = document.getElementById('pdfUpload');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            alert("Please upload the quotation PDF first!");
             return;
         }
 
-        // Exact header validation map matching Python's upper-case header mapping
-        const headers = matrixData[12] || [];
-        let colMap = { partner: 1, category: 2, desc: 3, umsr: 4, validity: 5, final_price: 6, currency: 7, ship_term: 8 };
-        
-        headers.forEach((h, idx) => {
-            const val = String(h || "").toUpperCase();
-            if (val.includes("PARTNER NAME")) colMap.partner = idx;
-            else if (val.includes("CATEGORY")) colMap.category = idx;
-            else if (val.includes("ITEM DESCRIPTION") && val.includes("46")) colMap.desc = idx;
-            else if (val.includes("PURCHASE UMSR")) colMap.umsr = idx;
-            else if (val.includes("VALIDITY")) colMap.validity = idx;
-            else if (val.includes("FINAL U/PRICE")) colMap.final_price = idx;
-            else if (val.includes("CURRENCY")) colMap.currency = idx;
-            else if (val.includes("SHIPPING TERM")) colMap.ship_term = idx;
-        });
-
-        extractedRowsData = [];
-        let consecutiveEmpty = 0;
-
-        // Python While Loop Port: Scans row 14 to empty boundary 
-        for (let i = 13; i < matrixData.length; i++) {
-            const currentRow = matrixData[i];
-            if (!currentRow || currentRow.length === 0) {
-                consecutiveEmpty++;
-                if (consecutiveEmpty > 20) break;
-                continue;
-            }
-
-            const pName = String(currentRow[colMap.partner] || "").trim();
-            const desc = String(currentRow[colMap.desc] || "").trim();
-
-            if ((!pName && !desc) || pName.toUpperCase().includes("PLEASE SELECT")) {
-                consecutiveEmpty++;
-                if (consecutiveEmpty > 20) break;
-                continue;
-            }
-            consecutiveEmpty = 0;
-
-            // Handle validity conversions to clear strings
-            let dateVal = currentRow[colMap.validity] || "";
-            if (dateVal instanceof Date) {
-                dateVal = dateVal.toISOString().split('T')[0].replace(/-/g, "");
-            } else {
-                dateVal = String(dateVal).replace(/[-/]/g, "").substring(0, 8);
-            }
-
-            // Builds exact row dictionary mirroring your Python dataset output
-            extractedRowsData.push({
-                originalRow: i + 1,
-                partnerName: pName.toUpperCase(),
-                category: String(currentRow[colMap.category] || "Others").trim(),
-                description: desc.toUpperCase().substring(0, 46),
-                partnerCode: "AUTO", // Handled during backend database parsing
-                buyerCode: "ZN", 
-                umsr: String(currentRow[colMap.umsr] || "PCE").trim(),
-                validity: dateVal,
-                finalPrice: parseFloat(currentRow[colMap.final_price] || 0).toFixed(2),
-                currency: String(currentRow[colMap.currency] || "MYR").trim(),
-                initialPrice: "",
-                moq: "1",
-                leadTime: "",
-                shippingTerm: String(currentRow[colMap.ship_term] || "EXW").trim()
-            });
-        }
-
-        if (extractedRowsData.length === 0) {
-            showStatus("No rows matching parsing parameters found.", "#e74c3c");
-            resetGridPlaceholder();
-        } else {
-            renderMatrixGrid();
-            showStatus(`Loaded ${extractedRowsData.length} correction rows matrix!`, "#2ecc71");
-        }
-    }
-
-    function renderMatrixGrid() {
-        // Renders the precise column schema from your Colab script
-        let htmlTable = `<table>
-            <thead>
-                <tr>
-                    <th>Row</th>
-                    <th>Partner Name</th>
-                    <th>Category</th>
-                    <th>Item Description (Max 46)</th>
-                    <th>Partner Code</th>
-                    <th>Buyer Code</th>
-                    <th>UMSR</th>
-                    <th>Validity</th>
-                    <th>Final Price</th>
-                    <th>Currency</th>
-                    <th>Initial Price</th>
-                    <th>MOQ</th>
-                    <th>Lead Time</th>
-                    <th>Shipping Term</th>
-                </tr>
-            </thead>
-            <tbody>`;
-
-        extractedRowsData.forEach((row, index) => {
-            htmlTable += `
-                <tr>
-                    <td><strong>${row.originalRow}</strong></td>
-                    <td><input type="text" value="${row.partnerName}" onchange="updateMemory(${index}, 'partnerName', this.value)"></td>
-                    <td><input type="text" value="${row.category}" onchange="updateMemory(${index}, 'category', this.value)"></td>
-                    <td><input type="text" maxlength="46" value="${row.description}" onchange="updateMemory(${index}, 'description', this.value.toUpperCase())"></td>
-                    <td><input type="text" value="${row.partnerCode}" readonly></td>
-                    <td><input type="text" value="${row.buyerCode}" readonly></td>
-                    <td><input type="text" value="${row.umsr}" onchange="updateMemory(${index}, 'umsr', this.value)"></td>
-                    <td><input type="text" value="${row.validity}" onchange="updateMemory(${index}, 'validity', this.value)"></td>
-                    <td><input type="number" step="0.01" value="${row.finalPrice}" onchange="updateMemory(${index}, 'finalPrice', parseFloat(this.value).toFixed(2))"></td>
-                    <td><input type="text" value="${row.currency}" onchange="updateMemory(${index}, 'currency', this.value)"></td>
-                    <td><input type="number" step="0.01" placeholder="0.00" onchange="updateMemory(${index}, 'initialPrice', this.value)"></td>
-                    <td><input type="number" value="${row.moq}" onchange="updateMemory(${index}, 'moq', this.value)"></td>
-                    <td><input type="number" placeholder="Days" onchange="updateMemory(${index}, 'leadTime', this.value)"></td>
-                    <td><input type="text" value="${row.shippingTerm}" onchange="updateMemory(${index}, 'shippingTerm', this.value)"></td>
-                </tr>`;
-        });
-
-        htmlTable += `</tbody></table>`;
-        gridContainer.innerHTML = htmlTable;
-        submitBtn.disabled = false;
-    }
-
-    function updateMemory(index, key, val) {
-        if (extractedRowsData[index]) {
-            extractedRowsData[index][key] = val;
-        }
-    }
-
-    function resetGridPlaceholder() {
-        gridContainer.innerHTML = `<p class="placeholder-text">Please upload a request file above to generate the manual correction rows matrix...</p>`;
         submitBtn.disabled = true;
-    }
+        showStatus("Uploading quotation file and logging catalog request details...", "#2980b9");
 
-    function showStatus(msg, color, keepShowing = false) {
+        // Convert the uploaded PDF into a string format so it can cross the web network safely
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64String = e.target.result.split(',')[1];
+            
+            const formData = {
+                pdfFile: base64String,
+                pdfName: file.name,
+                partnerName: partnerSearch.value,
+                partnerCode: document.getElementById('partnerCode').value || "NEW_PARTNER",
+                buyerCode: document.getElementById('buyerCode').value || "UNKNOWN",
+                currency: document.getElementById('currency').value || "MYR",
+                category: document.getElementById('category').value,
+                description: descInput.value,
+                uom: document.getElementById('uom').value,
+                validityDate: document.getElementById('validityDate').value,
+                initialPrice: document.getElementById('initialPrice').value,
+                finalPrice: document.getElementById('finalPrice').value,
+                moq: document.getElementById('moq').value,
+                leadTime: document.getElementById('leadTime').value,
+                shippingTerm: document.getElementById('shippingTerm').value
+            };
+
+            // Post everything to the Google cloud engine script
+            fetch(GOOGLE_WEBAPP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(() => {
+                showStatus("🎉 Request Submitted! Your quotation PDF and catalog codes have been saved.", "#2ecc71");
+                document.getElementById('requestForm').reset();
+                document.getElementById('charNum').innerText = "0";
+                submitBtn.disabled = false;
+            })
+            .catch(err => {
+                showStatus("Error uploading request: " + err.message, "#e74c3c");
+                submitBtn.disabled = false;
+            });
+        };
+        reader.readAsDataURL(file);
+    });
+
+    function showStatus(msg, color) {
         statusNotification.innerText = msg;
         statusNotification.style.backgroundColor = color;
         statusNotification.style.color = "white";
         statusNotification.style.display = "block";
-        if (!keepShowing) {
-            setTimeout(() => { statusNotification.style.display = "none"; }, 5000);
-        }
     }
-
-    submitBtn.addEventListener('click', function() {
-        const op = operatorDropdown.value;
-        const cat = categoryDropdown.value;
-
-        if (op === "PLEASE SELECT" || cat === "PLEASE SELECT") {
-            alert("Please pick a Buyer Profile and Category Type before syncing!");
-            return;
-        }
-
-        submitBtn.disabled = true;
-        showStatus("Syncing complete matrix package to Master files in Google Drive...", "#2980b9", true);
-
-        const packageData = {
-            meta: { operator: op, categoryType: cat },
-            rowsData: extractedRowsData
-        };
-
-        fetch(GOOGLE_WEBAPP_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(packageData)
-        })
-        .then(() => {
-            showStatus("🎉 Success! Matrix synced and committed to Google Drive files.", "#2ecc71");
-            fileUploader.value = "";
-            resetGridPlaceholder();
-        })
-        .catch(err => {
-            showStatus("Sync Error: " + err.message, "#e74c3c");
-            submitBtn.disabled = false;
-        });
-    });
 </script>
 
 </body>
